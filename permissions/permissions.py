@@ -1,6 +1,6 @@
 from django.urls import resolve
-from .models import UserRole
 from django.core.exceptions import PermissionDenied
+from accounts.models import CustomUser
 
 class BasePermission:
     """
@@ -30,9 +30,9 @@ class HasRolePermission(BasePermission):
         
         # Get the user's role and associated permissions
         try:
-            user_role = UserRole.objects.get(user=request.user)
-            role_permissions = user_role.role.permissions  # This could be a list of codenames
-        except UserRole.DoesNotExist:
+            user = CustomUser.objects.get(user=request.user)
+            role_permissions = user.role.permissions  # This could be a list of codenames
+        except CustomUser.DoesNotExist:
             # If the user has no role, deny permission
             raise PermissionDenied("User does not have an assigned role.")
 

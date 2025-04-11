@@ -41,11 +41,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders', 
     'accounts',
-    'permissions'
+    'permissions', 
 ]
 
+
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # <--- must be at the top
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -53,8 +56,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'middleware.middleware.JWTAuthenticationMiddleware',  # Custom JWT Authentication Middleware
+    'middleware.middleware.JWTAuthenticationMiddleware',
 ]
+
 
 ROOT_URLCONF = 'django_poc_tms.urls'
 
@@ -133,3 +137,4 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'accounts.CustomUser'
 JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
+CORS_ALLOW_ALL_ORIGINS = True

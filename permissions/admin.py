@@ -1,5 +1,5 @@
 from django.contrib import admin
-from permissions.models import Role, Permission, UserRole
+from permissions.models import Role, Permission
 
 
 
@@ -21,22 +21,13 @@ class RoleAdmin(admin.ModelAdmin):
     permissions_list.short_description = 'Permissions'
 
 class PermissionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'codename',)
+    list_display = ('id', 'name', 'codename')
     search_fields = ('codename',)
     ordering = ('codename',)
     fieldsets = (
-        (None, {'fields': ('codename',)}),
-    )
+    (None, {'fields': ('name', 'codename')}),
+)
 
-class UserRoleAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'role')
-    list_filter = ('role',)
-    search_fields = ('user__email', 'role__name')
-    ordering = ('user', 'role')
-    fieldsets = (
-        (None, {'fields': ('user', 'role')}),
-    )
 
 admin.site.register(Role, RoleAdmin)
 admin.site.register(Permission, PermissionAdmin)
-admin.site.register(UserRole, UserRoleAdmin)

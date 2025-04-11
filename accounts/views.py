@@ -6,9 +6,8 @@ from django.utils.decorators import method_decorator
 from .forms import UserRegistrationForm, UserLoginForm
 import jwt, datetime, os, json
 from django.conf import settings
+from accounts.models import CustomUser
 
-
-User = get_user_model()
 SECRET_KEY = os.getenv('JWT_SECRET_KEY')
 
 @method_decorator(csrf_exempt, name='dispatch')  # Disable CSRF for simplicity (not recommended for production)
@@ -19,7 +18,7 @@ class RegisterUserView(View):
         if form.is_valid():
             email = form.cleaned_data["email"]
 
-            if User.objects.filter(email=email).exists():
+            if CustomUser.objects.filter(email=email).exists():
                 return JsonResponse({"error": "User already exists!"}, status=400)
 
             form.save()  # Save the user to the database
@@ -41,7 +40,7 @@ class LoginUserView(View):
             password = form.cleaned_data["password"]
 
             try:
-                user = User.objects.get(email=email)
+                user = CustomUser.objects.get(email=email)
                 if not user.check_password(password):
                     return JsonResponse({"error": "Invalid credentials!"}, status=401)
 
@@ -57,7 +56,7 @@ class LoginUserView(View):
                     'token': token
                 }, status=200)
 
-            except User.DoesNotExist:
+            except CustomUser.DoesNotExist:
                 return JsonResponse({"error": "User does not exist!"}, status=404)
         else:
             return JsonResponse({"error": form.errors}, status=400)
@@ -69,3 +68,10 @@ class TestAPIView(View):
         print(request.GET)
         print(kwargs)
         return JsonResponse({"message": "This is a test API view!"}, status=200)
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ListUserView(View):
+    def get(self, request):
+        users = CustomUser.objects.all().order_by('id')
+        user_list = [{"id": user.id, "email": user.email, "role": "Not Assigned" if user.role is None else user.role.name} for user in users]
+        return JsonResponse({"users": user_list}, status=200)
